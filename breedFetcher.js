@@ -1,17 +1,28 @@
 const request = require('request');
-// const Promise = require('promise');
-const arg = process.argv[2];
+
+const fetchBreedDescription = (breedName, callback) => {
+  request(`https://api.thecatapi.com/v1/breeds/search?q=${breedName}`, (error, response, body) => {
+    
+    if (error) {
+      callback(error, null);
+      process.exit();
+    }
+    if (!JSON.parse(body)[0]) {
+      callback('There is no such cat breed', null);
+      process.exit();
+    }
+    const catDescription = JSON.parse(body)[0].description;
+    callback(null, catDescription);
+
+  });
+};
+
+module.exports = { fetchBreedDescription };
 
 
-request(`https://api.thecatapi.com/v1/breeds/search?q=${arg}`, (error, response, body) => {
-  if (error) {
-    console.error(`it looks like your URL is broken`);
-    process.exit();
-  }
-  if (!JSON.parse(body)[0]) {
-    console.log(`There is no such breed: ${arg}`);
-    process.exit();
-  }
-  const catDescription = JSON.parse(body)[0].description;
-  console.log(catDescription);
-});
+
+
+
+
+
+
